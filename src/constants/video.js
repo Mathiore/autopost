@@ -1,6 +1,16 @@
-export const CUT_MIN_SECONDS = 61
-export const CUT_MAX_SECONDS = 65
-export const FORBIDDEN_DURATION_SECONDS = 60
+export const CUT_MIN_MINUTES = 1
+export const CUT_MAX_MINUTES = 5
+export const DEFAULT_CUT_MINUTES = 1
+export const SECONDS_PER_MINUTE = 60
+
+export function clampCutMinutes(value) {
+  const minutes = Math.round(Number(value) || DEFAULT_CUT_MINUTES)
+  return Math.min(CUT_MAX_MINUTES, Math.max(CUT_MIN_MINUTES, minutes))
+}
+
+export function cutMinutesToSeconds(value) {
+  return clampCutMinutes(value) * SECONDS_PER_MINUTE
+}
 
 export const TIKTOK_ASPECT_RATIO = '9:16'
 export const TIKTOK_WIDTH = 9

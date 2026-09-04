@@ -43,7 +43,8 @@ export function useFFmpeg() {
     } catch (error) {
       ffmpeg = null
       loadingPromise = null
-      throw new Error('Não foi possível carregar o motor de cortes no navegador.')
+      const detail = error instanceof Error && error.message ? ` ${error.message}` : ''
+      throw new Error(`Não foi possível carregar o motor de cortes no navegador.${detail}`)
     } finally {
       isLoading.value = false
     }

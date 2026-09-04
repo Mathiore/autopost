@@ -1,5 +1,5 @@
 import { computed, reactive, ref } from 'vue'
-import { ACCEPTED_VIDEO_TYPES, CUT_MIN_SECONDS, SOURCE_TYPE } from '@/constants/video'
+import { ACCEPTED_VIDEO_TYPES, SOURCE_TYPE } from '@/constants/video'
 import { cleanSourceTitle } from '@/utils/title'
 import {
   extractYouTubeId,
@@ -51,7 +51,7 @@ export function useVideoSource() {
 
   const hasSource = computed(() => Boolean(sourceType.value))
   const canGenerateCuts = computed(
-    () => hasSource.value && durationSeconds.value >= CUT_MIN_SECONDS,
+    () => hasSource.value && durationSeconds.value > 0,
   )
 
   function revokeObjectUrl() {
@@ -133,8 +133,8 @@ export function useVideoSource() {
       if (!youtubeMeta.durationSeconds) {
         error.value = 'Não deu para ler a duração sozinho. Informe o tempo do vídeo.'
       }
-    } catch (loadError) {
-      error.value = loadError.message
+    } catch {
+      error.value = 'Não deu para ler a duração sozinho. Informe o tempo do vídeo.'
     } finally {
       isLoading.value = false
     }
@@ -144,7 +144,7 @@ export function useVideoSource() {
 
   function setManualDuration(seconds) {
     durationSeconds.value = Math.max(0, Math.floor(seconds || 0))
-    if (durationSeconds.value >= CUT_MIN_SECONDS) {
+    if (durationSeconds.value > 0) {
       error.value = ''
     }
   }

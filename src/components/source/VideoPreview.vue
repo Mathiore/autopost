@@ -68,7 +68,7 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
-import { CUT_MIN_SECONDS, SOURCE_TYPE } from '@/constants/video'
+import { SOURCE_TYPE } from '@/constants/video'
 import { formatDuration } from '@/utils/time'
 import { getYouTubeEmbedUrl } from '@/utils/youtube'
 
@@ -114,7 +114,7 @@ const sourceLabel = computed(() =>
 const embedUrl = computed(() => (props.youtubeId ? getYouTubeEmbedUrl(props.youtubeId) : ''))
 
 const needsDuration = computed(
-  () => props.sourceType === SOURCE_TYPE.YOUTUBE && props.durationSeconds < CUT_MIN_SECONDS,
+  () => props.sourceType === SOURCE_TYPE.YOUTUBE && props.durationSeconds <= 0,
 )
 
 const formattedDuration = computed(() => formatDuration(props.durationSeconds))

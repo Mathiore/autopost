@@ -35,6 +35,7 @@
 
           <CutSettings
             v-if="hasSource"
+            v-model:cut-minutes="cutMinutes"
             :can-generate="canGenerateCuts"
             :is-generating="isGeneratingCuts"
             :source-type="sourceType"
@@ -49,6 +50,8 @@
           <CutsGrid
             :cuts="cutItems"
             :leftover-seconds="leftoverSeconds"
+            :youtube-id="youtubeId"
+            :cut-minutes="cutMinutes"
           />
 
           <div v-if="hasCuts" class="workspace__publish">
@@ -83,7 +86,8 @@ import VideoPreview from '@/components/source/VideoPreview.vue'
 import { useCuts } from '@/composables/useCuts'
 import { useSchedule } from '@/composables/useSchedule'
 import { useVideoSource } from '@/composables/useVideoSource'
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
+import { cutMinutesToSeconds } from '@/constants/video'
 import { parseFlexibleDuration } from '@/utils/time'
 
 const {
@@ -96,7 +100,6 @@ const {
   isLoading: isLoadingSource,
   meta: sourceMeta,
   hasSource,
-  canGenerateCuts,
   loadFile,
   loadYouTube,
   setManualDuration,
@@ -106,6 +109,7 @@ const {
 const {
   items: cutItems,
   leftoverSeconds,
+  cutMinutes,
   isGenerating: isGeneratingCuts,
   error: cutsError,
   progress: cutsProgress,
@@ -125,6 +129,10 @@ const {
   plan,
   postAll,
 } = useSchedule()
+
+const canGenerateCuts = computed(
+  () => hasSource.value && durationSeconds.value >= cutMinutesToSeconds(cutMinutes.value),
+)
 
 function applyPlan(nextCuts = cutItems.value) {
   updateStatuses(plan(nextCuts))
@@ -158,6 +166,7 @@ async function onGenerateCuts() {
     objectUrl: objectUrl.value,
     youtubeId: youtubeId.value,
     sourceTitle: sourceMeta.title,
+    cutMinutes: cutMinutes.value,
   })
   applyPlan(generated)
 }

@@ -6,16 +6,21 @@
         <h2 class="section-title">{{ title }}</h2>
       </div>
       <p v-if="leftoverSeconds" class="cuts__leftover">
-        {{ leftoverLabel }} ficaram fora do intervalo 1:01–1:05.
+        {{ leftoverLabel }} ficaram fora dos cortes de {{ cutMinutes }} min.
       </p>
     </div>
 
     <div v-if="cuts.length" class="cuts__grid">
-      <CutCard v-for="cut in cuts" :key="cut.id" :cut="cut" />
+      <CutCard
+        v-for="cut in cuts"
+        :key="cut.id"
+        :cut="cut"
+        :youtube-id="youtubeId"
+      />
     </div>
 
     <div v-else class="card cuts__empty">
-      <p>Gere os cortes para ver a grade 9:16. Arquivos locais saem prontos para baixar.</p>
+      <p>Gere os cortes para assistir cada trecho na grade 9:16.</p>
     </div>
   </section>
 </template>
@@ -33,6 +38,14 @@ const props = defineProps({
   leftoverSeconds: {
     type: Number,
     default: 0,
+  },
+  youtubeId: {
+    type: String,
+    default: '',
+  },
+  cutMinutes: {
+    type: Number,
+    default: 1,
   },
 })
 
@@ -62,7 +75,7 @@ const leftoverLabel = computed(() => formatDuration(props.leftoverSeconds))
 
 .cuts__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
 }
 

@@ -9,13 +9,21 @@
         playsinline
         preload="metadata"
       ></video>
+      <iframe
+        v-else-if="youtubeEmbedUrl"
+        class="cut__youtube"
+        :src="youtubeEmbedUrl"
+        :title="cutTitle"
+        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
       <img
         v-else-if="cut.thumbnail"
         :src="cut.thumbnail"
         :alt="cutTitle"
       />
       <div v-else class="cut__placeholder">
-        <span>{{ cut.aspectRatio }}</span>
+        <span>{{ isProcessing ? 'Cortando…' : cut.aspectRatio }}</span>
       </div>
       <div class="cut__overlay">
         <span>{{ durationLabel }}</span>
@@ -35,7 +43,7 @@
         :href="cut.objectUrl"
         :download="downloadName"
       >
-        Baixar 9:16
+        Baixar corte
       </a>
     </div>
   </article>
@@ -43,14 +51,19 @@
 
 <script setup>
 import { computed } from 'vue'
-import { CUT_STATUS_LABEL } from '@/constants/video'
+import { CUT_STATUS, CUT_STATUS_LABEL } from '@/constants/video'
 import { formatClock, formatDuration } from '@/utils/time'
 import { toDownloadFileName } from '@/utils/title'
+import { getYouTubeEmbedUrl } from '@/utils/youtube'
 
 const props = defineProps({
   cut: {
     type: Object,
     required: true,
+  },
+  youtubeId: {
+    type: String,
+    default: '',
   },
 })
 
@@ -64,6 +77,11 @@ const clockLabel = computed(() =>
 )
 const statusLabel = computed(() => CUT_STATUS_LABEL[props.cut.status] || 'Rascunho')
 const downloadName = computed(() => toDownloadFileName(cutTitle.value))
+const isProcessing = computed(() => props.cut.status === CUT_STATUS.PROCESSING)
+const youtubeEmbedUrl = computed(() => {
+  if (props.cut.objectUrl || !props.youtubeId) return ''
+  return getYouTubeEmbedUrl(props.youtubeId, props.cut.startSeconds, props.cut.endSeconds)
+})
 </script>
 
 <style scoped>
@@ -91,6 +109,16 @@ const downloadName = computed(() => toDownloadFileName(cutTitle.value))
   object-fit: cover;
 }
 
+.cut__youtube {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 177.78%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  border: 0;
+}
+
 .cut__placeholder {
   display: grid;
   place-items: center;
@@ -100,7 +128,7 @@ const downloadName = computed(() => toDownloadFileName(cutTitle.value))
 
 .cut__overlay {
   position: absolute;
-  inset: auto 10px 10px;
+  inset: 10px 10px auto;
   display: flex;
   justify-content: space-between;
   gap: 8px;
@@ -110,6 +138,7 @@ const downloadName = computed(() => toDownloadFileName(cutTitle.value))
   font-size: 11px;
   font-weight: 700;
   pointer-events: none;
+  z-index: 1;
 }
 
 .cut__meta h3 {

@@ -31,9 +31,19 @@ export function getYouTubeWatchUrl(videoId) {
   return `https://www.youtube.com/watch?v=${videoId}`
 }
 
-export function getYouTubeEmbedUrl(videoId, startSeconds = 0) {
+export function getYouTubeEmbedUrl(videoId, startSeconds = 0, endSeconds = 0) {
   const start = Math.max(0, Math.floor(startSeconds))
-  return `https://www.youtube.com/embed/${videoId}?start=${start}&rel=0`
+  const params = new URLSearchParams({
+    start: String(start),
+    rel: '0',
+  })
+
+  const end = Math.floor(endSeconds)
+  if (end > start) {
+    params.set('end', String(end))
+  }
+
+  return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`
 }
 
 function loadYouTubeIframeApi() {
@@ -64,11 +74,24 @@ function loadYouTubeIframeApi() {
 }
 
 export async function fetchYouTubeOEmbed(videoId) {
-  const endpoint = `https://www.youtube.com/oembed?url=${encodeURIComponent(getYouTubeWatchUrl(videoId))}&format=json`
-  const response = await fetch(endpoint)
+  const watchUrl = getYouTubeWatchUrl(videoId)
+  const endpoints = [
+    `https://noembed.com/embed?url=${encodeURIComponent(watchUrl)}`,
+    `https://www.youtube.com/oembed?url=${encodeURIComponent(watchUrl)}&format=json`,
+  ]
 
-  if (!response.ok) return null
-  return response.json()
+  for (const endpoint of endpoints) {
+    try {
+      const response = await fetch(endpoint)
+      if (!response.ok) continue
+      const data = await response.json()
+      if (data?.title) return data
+    } catch {
+      // A public metadata endpoint may be blocked; try the next one.
+    }
+  }
+
+  return null
 }
 
 export async function fetchYouTubeDuration(videoId) {

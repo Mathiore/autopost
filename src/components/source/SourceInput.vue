@@ -3,8 +3,8 @@
     <p class="eyebrow">Origem</p>
     <h2 class="section-title">Vídeo ou link do YouTube</h2>
     <p class="muted source__lead">
-      Envie o arquivo completo. Os cortes cobrem o vídeo inteiro, sempre entre
-      1:01 e 1:05 — nunca 1:00 exato — e saem no formato vertical do TikTok.
+      Envie o arquivo completo. Você escolhe a duração de cada corte, até 5 min,
+      e eles saem no formato vertical do TikTok.
     </p>
 
     <div

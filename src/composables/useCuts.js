@@ -1,9 +1,14 @@
 import { computed, ref } from 'vue'
-import { CUT_STATUS, SOURCE_TYPE } from '@/constants/video'
+import {
+  CUT_STATUS,
+  DEFAULT_CUT_MINUTES,
+  SOURCE_TYPE,
+  clampCutMinutes,
+} from '@/constants/video'
 import { useFFmpeg } from '@/composables/useFFmpeg'
 import { generateCuts } from '@/utils/cuts'
 import { captureCutThumbnails } from '@/utils/thumbnail'
-import { encodeCuts } from '@/utils/transcode'
+import { extractCuts } from '@/utils/transcode'
 
 function revokeCutUrls(cuts) {
   cuts.forEach((cut) => {
@@ -14,6 +19,7 @@ function revokeCutUrls(cuts) {
 export function useCuts() {
   const items = ref([])
   const leftoverSeconds = ref(0)
+  const cutMinutes = ref(DEFAULT_CUT_MINUTES)
   const isGenerating = ref(false)
   const error = ref('')
   const thumbnails = ref({})
@@ -54,13 +60,19 @@ export function useCuts() {
     objectUrl = '',
     youtubeId = '',
     sourceTitle = '',
+    cutMinutes: nextCutMinutes = cutMinutes.value,
   }) {
     revokeCutUrls(items.value)
     isGenerating.value = true
     error.value = ''
     progress.value = { phase: 'planning', current: 0, total: 0 }
 
-    const result = generateCuts(durationSeconds, { sourceTitle })
+    const selectedMinutes = clampCutMinutes(nextCutMinutes)
+    cutMinutes.value = selectedMinutes
+    const result = generateCuts(durationSeconds, {
+      sourceTitle,
+      cutMinutes: selectedMinutes,
+    })
     leftoverSeconds.value = result.leftoverSeconds
     items.value = result.cuts.map((cut) => ({
       ...cut,
@@ -74,7 +86,7 @@ export function useCuts() {
 
     if (!items.value.length) {
       isGenerating.value = false
-      error.value = 'O vídeo precisa ter pelo menos 1:01 para gerar um corte.'
+      error.value = `O vídeo precisa ter pelo menos ${selectedMinutes} min para gerar um corte.`
       return items.value
     }
 
@@ -102,16 +114,18 @@ export function useCuts() {
         const ffmpeg = await ensureLoaded()
 
         progress.value = { phase: 'writing', current: 0, total: items.value.length }
-        const encoded = await encodeCuts(ffmpeg, file, items.value, (nextProgress) => {
-          progress.value = nextProgress
+        await extractCuts(ffmpeg, file, items.value, {
+          onProgress(nextProgress) {
+            progress.value = nextProgress
+          },
+          onCutReady({ id, objectUrl }) {
+            items.value = items.value.map((cut) =>
+              cut.id === id
+                ? { ...cut, objectUrl, status: CUT_STATUS.READY }
+                : cut,
+            )
+          },
         })
-
-        const urls = Object.fromEntries(encoded.map((item) => [item.id, item.objectUrl]))
-        items.value = items.value.map((cut) => ({
-          ...cut,
-          objectUrl: urls[cut.id] || '',
-          status: urls[cut.id] ? CUT_STATUS.READY : CUT_STATUS.DRAFT,
-        }))
       } catch (encodeError) {
         error.value = encodeError.message
         items.value = items.value.map((cut) => ({
@@ -133,6 +147,7 @@ export function useCuts() {
   return {
     items,
     leftoverSeconds,
+    cutMinutes,
     isGenerating,
     error,
     thumbnails,

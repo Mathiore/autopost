@@ -15,7 +15,7 @@
       <div class="header__meta">
         <span class="chip">Interface</span>
         <span class="chip">TikTok 9:16</span>
-        <span class="chip">1:01 — 1:05</span>
+        <span class="chip">até 5 min</span>
       </div>
     </div>
   </header>

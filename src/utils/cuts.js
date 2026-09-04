@@ -1,87 +1,39 @@
-import {
-  CUT_MAX_SECONDS,
-  CUT_MIN_SECONDS,
-  FORBIDDEN_DURATION_SECONDS,
-} from '@/constants/video'
+import { clampCutMinutes, cutMinutesToSeconds } from '@/constants/video'
 import { buildCutTitle } from '@/utils/title'
 
-function clampDuration(value) {
-  return Math.min(CUT_MAX_SECONDS, Math.max(CUT_MIN_SECONDS, value))
-}
-
-function applyVariety(durations) {
-  if (durations.length < 2) return durations
-
-  const varied = [...durations]
-  const offsets = [2, -1, 1, -2, 1]
-
-  for (let index = 0; index < varied.length; index += 1) {
-    const neighbor = (index + 1) % varied.length
-    const offset = offsets[index % offsets.length]
-    const nextValue = varied[index] + offset
-    const neighborValue = varied[neighbor] - offset
-
-    const bothValid =
-      nextValue >= CUT_MIN_SECONDS &&
-      nextValue <= CUT_MAX_SECONDS &&
-      nextValue !== FORBIDDEN_DURATION_SECONDS &&
-      neighborValue >= CUT_MIN_SECONDS &&
-      neighborValue <= CUT_MAX_SECONDS &&
-      neighborValue !== FORBIDDEN_DURATION_SECONDS
-
-    if (bothValid) {
-      varied[index] = nextValue
-      varied[neighbor] = neighborValue
-    }
-  }
-
-  return varied
-}
-
-export function generateCuts(totalDurationSeconds, { sourceTitle = '' } = {}) {
+export function generateCuts(totalDurationSeconds, { sourceTitle = '', cutMinutes = 1 } = {}) {
   const total = Math.floor(Number(totalDurationSeconds) || 0)
+  const minutes = clampCutMinutes(cutMinutes)
+  const cutSeconds = cutMinutesToSeconds(minutes)
 
-  if (total < CUT_MIN_SECONDS) {
+  if (total < cutSeconds) {
     return {
       cuts: [],
       leftoverSeconds: Math.max(0, total),
     }
   }
 
-  const maxCuts = Math.floor(total / CUT_MIN_SECONDS)
-  const targetCoverage = Math.min(total, maxCuts * CUT_MAX_SECONDS)
-  const extra = targetCoverage - maxCuts * CUT_MIN_SECONDS
-  const durations = Array.from({ length: maxCuts }, () => CUT_MIN_SECONDS)
+  const count = Math.floor(total / cutSeconds)
+  const leftoverSeconds = total - count * cutSeconds
 
-  for (let spent = 0; spent < extra; spent += 1) {
-    const index = spent % maxCuts
-    if (durations[index] < CUT_MAX_SECONDS) {
-      durations[index] += 1
-    }
-  }
-
-  const varied = applyVariety(durations).map(clampDuration)
-
-  let cursor = 0
-  const cuts = varied.map((duration, index) => {
-    const start = cursor
-    const end = cursor + duration
-    cursor = end
+  const cuts = Array.from({ length: count }, (_, index) => {
+    const start = index * cutSeconds
+    const end = start + cutSeconds
 
     return {
       id: `cut-${index + 1}`,
       index: index + 1,
-      title: buildCutTitle(sourceTitle, index + 1, varied.length),
+      title: buildCutTitle(sourceTitle, index + 1, count),
       startSeconds: start,
       endSeconds: end,
-      durationSeconds: duration,
+      durationSeconds: cutSeconds,
       aspectRatio: '9:16',
     }
   })
 
   return {
     cuts,
-    leftoverSeconds: Math.max(0, total - cursor),
+    leftoverSeconds,
   }
 }
 
