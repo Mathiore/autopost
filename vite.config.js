@@ -3,6 +3,8 @@ import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
+  // Project site: https://mathiore.github.io/autopost/
+  base: process.env.GITHUB_ACTIONS ? '/autopost/' : '/',
   plugins: [vue()],
   resolve: {
     alias: {
