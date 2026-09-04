@@ -48,7 +48,7 @@ export function useSchedule() {
 
     return buildSchedule(cuts, startDate, interval).map((cut) => ({
       ...cut,
-      status: CUT_STATUS.DRAFT,
+      status: cut.status || CUT_STATUS.DRAFT,
     }))
   }
 

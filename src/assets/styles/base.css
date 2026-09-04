@@ -163,6 +163,8 @@ a {
 }
 
 .status-draft { color: var(--text-soft); }
+.status-processing { color: var(--warn); }
+.status-ready { color: var(--ok); }
 .status-queued { color: var(--warn); }
 .status-scheduled { color: var(--cyan); }
 .status-published { color: var(--ok); }

@@ -26,8 +26,10 @@
             :title="sourceMeta.title"
             :source-type="sourceType"
             :object-url="objectUrl"
+            :youtube-id="youtubeId"
             :thumbnail="sourceMeta.thumbnail"
             :duration-seconds="durationSeconds"
+            :is-loading="isLoadingSource"
             @set-duration="onManualDuration"
           />
 
@@ -35,6 +37,9 @@
             v-if="hasSource"
             :can-generate="canGenerateCuts"
             :is-generating="isGeneratingCuts"
+            :source-type="sourceType"
+            :error="cutsError"
+            :progress="cutsProgress"
             @generate="onGenerateCuts"
             @reset="onReset"
           />
@@ -83,7 +88,9 @@ import { parseFlexibleDuration } from '@/utils/time'
 
 const {
   sourceType,
+  file,
   objectUrl,
+  youtubeId,
   durationSeconds,
   error: sourceError,
   isLoading: isLoadingSource,
@@ -100,6 +107,8 @@ const {
   items: cutItems,
   leftoverSeconds,
   isGenerating: isGeneratingCuts,
+  error: cutsError,
+  progress: cutsProgress,
   count: cutCount,
   hasCuts,
   generate: generateCuts,
@@ -126,9 +135,9 @@ async function onSelectFile(file) {
   await loadFile(file)
 }
 
-function onSubmitYouTube(url) {
+async function onSubmitYouTube(url) {
   resetCuts()
-  loadYouTube(url)
+  await loadYouTube(url)
 }
 
 function onManualDuration(value) {
@@ -143,7 +152,13 @@ function onManualDuration(value) {
 }
 
 async function onGenerateCuts() {
-  const generated = await generateCuts(durationSeconds.value, objectUrl.value)
+  const generated = await generateCuts({
+    durationSeconds: durationSeconds.value,
+    file: file.value,
+    objectUrl: objectUrl.value,
+    youtubeId: youtubeId.value,
+    sourceTitle: sourceMeta.title,
+  })
   applyPlan(generated)
 }
 

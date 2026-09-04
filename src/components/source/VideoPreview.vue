@@ -14,6 +14,14 @@
         controls
         playsinline
       ></video>
+      <iframe
+        v-else-if="youtubeId"
+        class="preview__media"
+        :src="embedUrl"
+        title="Pré-visualização do YouTube"
+        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
       <img
         v-else-if="thumbnail"
         class="preview__media preview__media--image"
@@ -24,7 +32,9 @@
       <span class="preview__badge">Fonte 16:9</span>
     </div>
 
-    <form v-if="needsDuration" class="preview__duration" @submit.prevent="onSubmitDuration">
+    <p v-if="isLoading" class="dim preview__hint">Lendo título e duração do YouTube…</p>
+
+    <form v-else-if="needsDuration" class="preview__duration" @submit.prevent="onSubmitDuration">
       <label class="field-label" for="manual-duration">
         Duração do vídeo do YouTube
       </label>
@@ -39,7 +49,7 @@
         <button class="btn btn-ghost" type="submit">Aplicar</button>
       </div>
       <p class="dim preview__hint">
-        Sem API ainda. Informe a duração para montar os cortes do vídeo inteiro.
+        Se a leitura automática falhar, informe a duração para montar os cortes.
       </p>
     </form>
 
@@ -60,6 +70,7 @@
 import { computed, ref, watch } from 'vue'
 import { CUT_MIN_SECONDS, SOURCE_TYPE } from '@/constants/video'
 import { formatDuration } from '@/utils/time'
+import { getYouTubeEmbedUrl } from '@/utils/youtube'
 
 const props = defineProps({
   title: {
@@ -74,6 +85,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  youtubeId: {
+    type: String,
+    default: '',
+  },
   thumbnail: {
     type: String,
     default: '',
@@ -81,6 +96,10 @@ const props = defineProps({
   durationSeconds: {
     type: Number,
     default: 0,
+  },
+  isLoading: {
+    type: Boolean,
+    default: false,
   },
 })
 
@@ -91,6 +110,8 @@ const localDuration = ref('')
 const sourceLabel = computed(() =>
   props.sourceType === SOURCE_TYPE.YOUTUBE ? 'Link do YouTube' : 'Arquivo local',
 )
+
+const embedUrl = computed(() => (props.youtubeId ? getYouTubeEmbedUrl(props.youtubeId) : ''))
 
 const needsDuration = computed(
   () => props.sourceType === SOURCE_TYPE.YOUTUBE && props.durationSeconds < CUT_MIN_SECONDS,
@@ -141,6 +162,7 @@ function onSubmitDuration() {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border: 0;
 }
 
 .preview__empty {

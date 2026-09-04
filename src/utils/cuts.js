@@ -3,6 +3,7 @@ import {
   CUT_MIN_SECONDS,
   FORBIDDEN_DURATION_SECONDS,
 } from '@/constants/video'
+import { buildCutTitle } from '@/utils/title'
 
 function clampDuration(value) {
   return Math.min(CUT_MAX_SECONDS, Math.max(CUT_MIN_SECONDS, value))
@@ -37,7 +38,7 @@ function applyVariety(durations) {
   return varied
 }
 
-export function generateCuts(totalDurationSeconds) {
+export function generateCuts(totalDurationSeconds, { sourceTitle = '' } = {}) {
   const total = Math.floor(Number(totalDurationSeconds) || 0)
 
   if (total < CUT_MIN_SECONDS) {
@@ -70,6 +71,7 @@ export function generateCuts(totalDurationSeconds) {
     return {
       id: `cut-${index + 1}`,
       index: index + 1,
+      title: buildCutTitle(sourceTitle, index + 1, varied.length),
       startSeconds: start,
       endSeconds: end,
       durationSeconds: duration,

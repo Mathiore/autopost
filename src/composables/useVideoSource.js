@@ -1,6 +1,12 @@
 import { computed, reactive, ref } from 'vue'
 import { ACCEPTED_VIDEO_TYPES, CUT_MIN_SECONDS, SOURCE_TYPE } from '@/constants/video'
-import { extractYouTubeId, getYouTubeThumbnail, getYouTubeWatchUrl } from '@/utils/youtube'
+import { cleanSourceTitle } from '@/utils/title'
+import {
+  extractYouTubeId,
+  fetchYouTubeMeta,
+  getYouTubeThumbnail,
+  getYouTubeWatchUrl,
+} from '@/utils/youtube'
 
 function readVideoDuration(file, objectUrl) {
   return new Promise((resolve, reject) => {
@@ -88,7 +94,7 @@ export function useVideoSource() {
       file.value = nextFile
       objectUrl.value = url
       durationSeconds.value = Math.floor(duration)
-      meta.title = nextFile.name
+      meta.title = cleanSourceTitle(nextFile.name) || nextFile.name
       meta.thumbnail = ''
       error.value = ''
     } catch (loadError) {
@@ -99,7 +105,7 @@ export function useVideoSource() {
     }
   }
 
-  function loadYouTube(url) {
+  async function loadYouTube(url) {
     const videoId = extractYouTubeId(url)
     if (!videoId) {
       error.value = 'Cole um link válido do YouTube.'
@@ -116,11 +122,31 @@ export function useVideoSource() {
     meta.title = `YouTube · ${videoId}`
     meta.thumbnail = getYouTubeThumbnail(videoId)
     error.value = ''
+    isLoading.value = true
+
+    try {
+      const youtubeMeta = await fetchYouTubeMeta(videoId)
+      meta.title = youtubeMeta.title
+      meta.thumbnail = youtubeMeta.thumbnail
+      durationSeconds.value = youtubeMeta.durationSeconds
+
+      if (!youtubeMeta.durationSeconds) {
+        error.value = 'Não deu para ler a duração sozinho. Informe o tempo do vídeo.'
+      }
+    } catch (loadError) {
+      error.value = loadError.message
+    } finally {
+      isLoading.value = false
+    }
+
     return true
   }
 
   function setManualDuration(seconds) {
     durationSeconds.value = Math.max(0, Math.floor(seconds || 0))
+    if (durationSeconds.value >= CUT_MIN_SECONDS) {
+      error.value = ''
+    }
   }
 
   return {

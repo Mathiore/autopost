@@ -22,6 +22,13 @@
       </li>
     </ul>
 
+    <p v-if="isYouTube" class="settings__note">
+      Com link do YouTube, a fila é planejada agora. O arquivo 9:16 é gerado
+      quando você envia o vídeo.
+    </p>
+
+    <p v-if="error" class="settings__error">{{ error }}</p>
+
     <div class="settings__actions">
       <button
         class="btn btn-primary"
@@ -29,7 +36,7 @@
         :disabled="!canGenerate || isGenerating"
         @click="$emit('generate')"
       >
-        {{ isGenerating ? 'Gerando cortes…' : 'Gerar cortes' }}
+        {{ ctaLabel }}
       </button>
       <button class="btn btn-ghost" type="button" @click="$emit('reset')">
         Trocar origem
@@ -39,7 +46,10 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { SOURCE_TYPE } from '@/constants/video'
+
+const props = defineProps({
   canGenerate: {
     type: Boolean,
     default: false,
@@ -48,9 +58,34 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  sourceType: {
+    type: String,
+    default: '',
+  },
+  error: {
+    type: String,
+    default: '',
+  },
+  progress: {
+    type: Object,
+    default: () => ({ phase: '', current: 0, total: 0 }),
+  },
 })
 
 defineEmits(['generate', 'reset'])
+
+const isYouTube = computed(() => props.sourceType === SOURCE_TYPE.YOUTUBE)
+
+const ctaLabel = computed(() => {
+  if (!props.isGenerating) return 'Gerar cortes'
+  if (props.progress.phase === 'loading-engine') return 'Carregando motor de cortes…'
+  if (props.progress.phase === 'writing') return 'Preparando o vídeo…'
+  if (props.progress.phase === 'thumbnails') return 'Gerando previews 9:16…'
+  if (props.progress.phase === 'cutting' && props.progress.total) {
+    return `Gerando corte ${props.progress.current}/${props.progress.total}…`
+  }
+  return 'Gerando cortes…'
+})
 </script>
 
 <style scoped>
@@ -91,6 +126,20 @@ defineEmits(['generate', 'reset'])
 .settings span {
   color: var(--text-soft);
   font-size: 13px;
+}
+
+.settings__note,
+.settings__error {
+  margin: 0 0 16px;
+  font-size: 13px;
+}
+
+.settings__note {
+  color: var(--text-soft);
+}
+
+.settings__error {
+  color: var(--accent);
 }
 
 .settings__actions {

@@ -5,7 +5,7 @@
       <li v-for="cut in cuts" :key="cut.id">
         <span class="queue__index">{{ String(cut.index).padStart(2, '0') }}</span>
         <div>
-          <strong>Corte {{ cut.index }} · {{ durationLabel(cut) }}</strong>
+          <strong>{{ cut.title || `Corte ${cut.index}` }} · {{ durationLabel(cut) }}</strong>
           <p>{{ rangeLabel(cut) }}</p>
         </div>
         <div class="queue__when">
@@ -76,6 +76,8 @@ function statusLabel(cut) {
 .queue strong {
   display: block;
   font-size: 14px;
+  line-height: 1.3;
+  word-break: break-word;
 }
 
 .queue p,

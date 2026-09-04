@@ -1,10 +1,18 @@
 <template>
   <article class="cut">
     <div class="cut__frame">
+      <video
+        v-if="cut.objectUrl"
+        :src="cut.objectUrl"
+        :poster="cut.thumbnail"
+        controls
+        playsinline
+        preload="metadata"
+      ></video>
       <img
-        v-if="cut.thumbnail"
+        v-else-if="cut.thumbnail"
         :src="cut.thumbnail"
-        :alt="`Preview do corte ${cut.index}`"
+        :alt="cutTitle"
       />
       <div v-else class="cut__placeholder">
         <span>{{ cut.aspectRatio }}</span>
@@ -16,11 +24,19 @@
     </div>
 
     <div class="cut__meta">
-      <h3>Corte {{ String(cut.index).padStart(2, '0') }}</h3>
+      <h3 :title="cutTitle">{{ cutTitle }}</h3>
       <p>{{ rangeLabel }}</p>
       <p v-if="cut.scheduledAt" class="cut__time">
         {{ clockLabel }}
       </p>
+      <a
+        v-if="cut.objectUrl"
+        class="cut__download"
+        :href="cut.objectUrl"
+        :download="downloadName"
+      >
+        Baixar 9:16
+      </a>
     </div>
   </article>
 </template>
@@ -29,6 +45,7 @@
 import { computed } from 'vue'
 import { CUT_STATUS_LABEL } from '@/constants/video'
 import { formatClock, formatDuration } from '@/utils/time'
+import { toDownloadFileName } from '@/utils/title'
 
 const props = defineProps({
   cut: {
@@ -37,6 +54,7 @@ const props = defineProps({
   },
 })
 
+const cutTitle = computed(() => props.cut.title || `Corte ${props.cut.index}`)
 const durationLabel = computed(() => formatDuration(props.cut.durationSeconds))
 const rangeLabel = computed(
   () => `${formatDuration(props.cut.startSeconds)} → ${formatDuration(props.cut.endSeconds)}`,
@@ -45,6 +63,7 @@ const clockLabel = computed(() =>
   props.cut.scheduledAt ? `Postagem ${formatClock(props.cut.scheduledAt)}` : '',
 )
 const statusLabel = computed(() => CUT_STATUS_LABEL[props.cut.status] || 'Rascunho')
+const downloadName = computed(() => toDownloadFileName(cutTitle.value))
 </script>
 
 <style scoped>
@@ -64,6 +83,7 @@ const statusLabel = computed(() => CUT_STATUS_LABEL[props.cut.status] || 'Rascun
   border: 1px solid var(--line);
 }
 
+.cut__frame video,
 .cut__frame img,
 .cut__placeholder {
   width: 100%;
@@ -89,12 +109,15 @@ const statusLabel = computed(() => CUT_STATUS_LABEL[props.cut.status] || 'Rascun
   background: rgba(8, 8, 12, 0.78);
   font-size: 11px;
   font-weight: 700;
+  pointer-events: none;
 }
 
 .cut__meta h3 {
   margin: 0;
   font-family: var(--font-display);
   font-size: 15px;
+  line-height: 1.25;
+  word-break: break-word;
 }
 
 .cut__meta p {
@@ -107,5 +130,18 @@ const statusLabel = computed(() => CUT_STATUS_LABEL[props.cut.status] || 'Rascun
   color: var(--cyan);
   font-family: var(--font-mono);
   font-size: 12px;
+}
+
+.cut__download {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--cyan);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cut__download:hover {
+  text-decoration: underline;
 }
 </style>

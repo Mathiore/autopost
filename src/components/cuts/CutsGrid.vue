@@ -15,7 +15,7 @@
     </div>
 
     <div v-else class="card cuts__empty">
-      <p>Gere os cortes para ver a grade 9:16 e a ordem de postagem.</p>
+      <p>Gere os cortes para ver a grade 9:16. Arquivos locais saem prontos para baixar.</p>
     </div>
   </section>
 </template>
