@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="header__inner">
-      <div class="brand">
+      <RouterLink class="brand" to="/" aria-label="AutoTok, página inicial">
         <span class="brand__mark" aria-hidden="true">
           <span class="brand__dot brand__dot--red"></span>
           <span class="brand__dot brand__dot--cyan"></span>
@@ -10,7 +10,7 @@
           <strong>AutoTok</strong>
           <p>Cortes verticais e fila de postagem</p>
         </div>
-      </div>
+      </RouterLink>
 
       <div class="header__meta">
         <span class="chip">Interface</span>
@@ -46,6 +46,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  text-decoration: none;
 }
 
 .brand strong {

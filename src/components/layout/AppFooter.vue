@@ -4,6 +4,10 @@
       A postagem automática será enviada por um backend em Go + API do TikTok.
       Esta tela já define a ordem, o formato 9:16 e os horários da fila.
     </p>
+    <nav class="footer__legal" aria-label="Documentos legais">
+      <RouterLink to="/privacy">Privacy Policy</RouterLink>
+      <RouterLink to="/terms">Terms of Service</RouterLink>
+    </nav>
   </footer>
 </template>
 
@@ -17,5 +21,22 @@
 
 .footer p {
   margin: 0;
+}
+
+.footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.footer__legal a {
+  color: var(--text-soft);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer__legal a.router-link-exact-active {
+  color: var(--cyan);
 }
 </style>
