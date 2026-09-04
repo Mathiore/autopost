@@ -1,0 +1,25 @@
+:root {
+  --bg: #0b0b0f;
+  --bg-elevated: #121218;
+  --bg-card: #17171f;
+  --bg-card-hover: #1d1d27;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --text: #f3efe6;
+  --text-soft: #b7b2a8;
+  --text-dim: #7d7986;
+  --accent: #ff3b5c;
+  --accent-deep: #c81d3c;
+  --cyan: #2ee6d6;
+  --cyan-dim: rgba(46, 230, 214, 0.14);
+  --warn: #f5b942;
+  --ok: #3ee0a0;
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 24px;
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --header-h: 72px;
+}
