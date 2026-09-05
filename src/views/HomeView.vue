@@ -76,9 +76,11 @@ import SchedulePanel from '@/components/schedule/SchedulePanel.vue'
 import SourceInput from '@/components/source/SourceInput.vue'
 import VideoPreview from '@/components/source/VideoPreview.vue'
 import { useCuts } from '@/composables/useCuts'
+import { usePublishGate } from '@/composables/usePublishGate'
 import { useSchedule } from '@/composables/useSchedule'
+import { useTikTok } from '@/composables/useTikTok'
 import { useVideoSource } from '@/composables/useVideoSource'
-import { computed, watch } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { cutMinutesToSeconds } from '@/constants/video'
 import { parseFlexibleDuration } from '@/utils/time'
 
@@ -86,6 +88,7 @@ const {
   sourceType,
   file,
   objectUrl,
+  youtubeUrl,
   youtubeId,
   durationSeconds,
   error: sourceError,
@@ -121,6 +124,9 @@ const {
   plan,
   postAll,
 } = useSchedule()
+
+const { refreshAccount } = useTikTok()
+const { requireTikTok, peekSource } = usePublishGate()
 
 const canGenerateCuts = computed(
   () => hasSource.value && durationSeconds.value >= cutMinutesToSeconds(cutMinutes.value),
@@ -164,6 +170,12 @@ async function onGenerateCuts() {
 }
 
 async function onPostAll() {
+  const allowed = await requireTikTok({
+    next: '/',
+    sourceUrl: youtubeUrl.value,
+  })
+  if (!allowed) return
+
   const posted = await postAll(cutItems.value, (next) => {
     updateStatuses(next)
   })
@@ -177,6 +189,14 @@ function onReset() {
 
 watch([startClock, intervalMinutes], () => {
   if (hasCuts.value) applyPlan()
+})
+
+onMounted(async () => {
+  await refreshAccount()
+  const savedUrl = peekSource()
+  if (!hasSource.value && savedUrl) {
+    await loadYouTube(savedUrl)
+  }
 })
 </script>
 

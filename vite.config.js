@@ -6,7 +6,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 const distDir = fileURLToPath(new URL('./dist', import.meta.url))
 
-function githubPagesRoutes(routes = ['privacy', 'terms']) {
+function githubPagesRoutes(routes = ['privacy', 'terms', 'login', 'integrations/tiktok']) {
   return {
     name: 'github-pages-routes',
     apply: 'build',
@@ -40,5 +40,15 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8085',
+        changeOrigin: true,
+      },
+      '/health': {
+        target: 'http://127.0.0.1:8085',
+        changeOrigin: true,
+      },
+    },
   },
 })

@@ -13,13 +13,27 @@
       </RouterLink>
 
       <div class="header__meta">
-        <span class="chip">Interface</span>
+        <RouterLink v-if="!isConnected" class="chip chip--link" to="/login">
+          Entrar
+        </RouterLink>
+        <span v-else class="chip">TikTok conectado</span>
         <span class="chip">TikTok 9:16</span>
         <span class="chip">até 5 min</span>
       </div>
     </div>
   </header>
 </template>
+
+<script setup>
+import { onMounted } from 'vue'
+import { useTikTok } from '@/composables/useTikTok'
+
+const { isConnected, refreshAccount } = useTikTok()
+
+onMounted(() => {
+  refreshAccount()
+})
+</script>
 
 <style scoped>
 .header {
@@ -96,8 +110,13 @@
   gap: 8px;
 }
 
+.chip--link {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
 @media (max-width: 720px) {
-  .header__meta {
+  .header__meta .chip:not(.chip--link):not(:first-child) {
     display: none;
   }
 }

@@ -16,18 +16,19 @@ function revokeCutUrls(cuts) {
   })
 }
 
+const items = ref([])
+const leftoverSeconds = ref(0)
+const cutMinutes = ref(DEFAULT_CUT_MINUTES)
+const isGenerating = ref(false)
+const error = ref('')
+const thumbnails = ref({})
+const progress = ref({
+  phase: '',
+  current: 0,
+  total: 0,
+})
+
 export function useCuts() {
-  const items = ref([])
-  const leftoverSeconds = ref(0)
-  const cutMinutes = ref(DEFAULT_CUT_MINUTES)
-  const isGenerating = ref(false)
-  const error = ref('')
-  const thumbnails = ref({})
-  const progress = ref({
-    phase: '',
-    current: 0,
-    total: 0,
-  })
 
   const { ensureLoaded } = useFFmpeg()
 

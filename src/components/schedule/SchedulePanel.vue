@@ -93,7 +93,7 @@ const canPost = computed(() => props.cutCount > 0 && !props.isPosting)
 const ctaLabel = computed(() => {
   if (props.isPosting) return 'Enfileirando cortes…'
   if (props.hasPosted) return 'Fila agendada'
-  return 'Postar todos em ordem'
+  return 'Enviar vídeos'
 })
 
 const preview = computed(() => {

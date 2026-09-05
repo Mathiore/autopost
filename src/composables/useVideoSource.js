@@ -33,21 +33,22 @@ function readVideoDuration(file, objectUrl) {
   })
 }
 
-export function useVideoSource() {
-  const sourceType = ref(null)
-  const file = ref(null)
-  const objectUrl = ref('')
-  const youtubeUrl = ref('')
-  const youtubeId = ref('')
-  const durationSeconds = ref(0)
-  const durationInput = ref('')
-  const error = ref('')
-  const isLoading = ref(false)
+const sourceType = ref(null)
+const file = ref(null)
+const objectUrl = ref('')
+const youtubeUrl = ref('')
+const youtubeId = ref('')
+const durationSeconds = ref(0)
+const durationInput = ref('')
+const error = ref('')
+const isLoading = ref(false)
 
-  const meta = reactive({
-    title: '',
-    thumbnail: '',
-  })
+const meta = reactive({
+  title: '',
+  thumbnail: '',
+})
+
+export function useVideoSource() {
 
   const hasSource = computed(() => Boolean(sourceType.value))
   const canGenerateCuts = computed(

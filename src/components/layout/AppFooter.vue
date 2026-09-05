@@ -1,8 +1,8 @@
 <template>
   <footer class="footer">
     <p>
-      A postagem automática será enviada por um backend em Go + API do TikTok.
-      Esta tela já define a ordem, o formato 9:16 e os horários da fila.
+      Os cortes saem em 9:16 e entram na fila. O envio pede login no TikTok
+      e segue pelo backend em Go.
     </p>
     <nav class="footer__legal" aria-label="Documentos legais">
       <RouterLink to="/privacy">Privacy Policy</RouterLink>

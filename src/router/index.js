@@ -3,6 +3,8 @@ import privacyMarkdown from '../../PRIVACY.md?raw'
 import termsMarkdown from '../../TERMS.md?raw'
 import HomeView from '@/views/HomeView.vue'
 import LegalView from '@/views/LegalView.vue'
+import LoginView from '@/views/LoginView.vue'
+import TikTokCallbackView from '@/views/TikTokCallbackView.vue'
 
 const DEFAULT_TITLE = 'AutoTok — Cortes e postagem'
 
@@ -39,6 +41,18 @@ const router = createRouter({
         eyebrow: 'Terms of Service',
       },
       meta: { title: 'Terms of Service — AutoTok' },
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView,
+      meta: { title: 'Entrar — AutoTok' },
+    },
+    {
+      path: '/integrations/tiktok',
+      name: 'tiktok-callback',
+      component: TikTokCallbackView,
+      meta: { title: 'TikTok — AutoTok' },
     },
   ],
 })

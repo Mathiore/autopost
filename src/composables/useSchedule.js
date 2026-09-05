@@ -14,12 +14,13 @@ function wait(ms) {
   })
 }
 
+const startClock = ref(todayClock(15))
+const intervalMinutes = ref(DEFAULT_POST_INTERVAL_MINUTES)
+const isPosting = ref(false)
+const hasPosted = ref(false)
+const error = ref('')
+
 export function useSchedule() {
-  const startClock = ref(todayClock(15))
-  const intervalMinutes = ref(DEFAULT_POST_INTERVAL_MINUTES)
-  const isPosting = ref(false)
-  const hasPosted = ref(false)
-  const error = ref('')
 
   const intervalLabel = computed(() => {
     const minutes = Number(intervalMinutes.value)
