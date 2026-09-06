@@ -111,6 +111,13 @@ a {
   box-shadow: 0 0 0 3px var(--cyan-dim);
 }
 
+textarea.input {
+  height: auto;
+  min-height: 92px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -163,8 +170,10 @@ a {
 }
 
 .status-draft { color: var(--text-soft); }
+.status-idle { color: var(--text-soft); }
 .status-processing { color: var(--warn); }
 .status-ready { color: var(--ok); }
+.status-error { color: var(--accent); }
 .status-queued { color: var(--warn); }
 .status-scheduled { color: var(--cyan); }
 .status-published { color: var(--ok); }

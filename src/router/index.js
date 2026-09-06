@@ -3,6 +3,7 @@ import privacyMarkdown from '../../PRIVACY.md?raw'
 import termsMarkdown from '../../TERMS.md?raw'
 import HomeView from '@/views/HomeView.vue'
 import LegalView from '@/views/LegalView.vue'
+import LocalEditorView from '@/views/LocalEditorView.vue'
 import LoginView from '@/views/LoginView.vue'
 import TikTokCallbackView from '@/views/TikTokCallbackView.vue'
 
@@ -41,6 +42,12 @@ const router = createRouter({
         eyebrow: 'Terms of Service',
       },
       meta: { title: 'Terms of Service — AutoTok' },
+    },
+    {
+      path: '/editor',
+      name: 'editor',
+      component: LocalEditorView,
+      meta: { title: 'Editor local — AutoTok' },
     },
     {
       path: '/login',

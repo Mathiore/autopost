@@ -15,6 +15,19 @@ export function formatDuration(totalSeconds) {
   return `${minutes}:${padTime(seconds)}`
 }
 
+export function formatTimecode(totalSeconds) {
+  const safe = Math.max(0, Math.floor(Number(totalSeconds) || 0))
+  const hours = Math.floor(safe / 3600)
+  const minutes = Math.floor((safe % 3600) / 60)
+  const seconds = safe % 60
+
+  if (hours > 0) {
+    return `${hours}:${padTime(minutes)}:${padTime(seconds)}`
+  }
+
+  return `${padTime(minutes)}:${padTime(seconds)}`
+}
+
 export function formatClock(date) {
   const instance = date instanceof Date ? date : new Date(date)
   return `${padTime(instance.getHours())}:${padTime(instance.getMinutes())}`

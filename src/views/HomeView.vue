@@ -6,6 +6,8 @@
       <p class="muted">
         Interface inicial do AutoTok. A origem entra aqui; os cortes já nascem
         no formato TikTok e saem com horários defasados para publicação em ordem.
+        Para cortes manuais com legenda só no navegador, use o
+        <RouterLink class="hero__link" to="/editor">editor local</RouterLink>.
       </p>
     </section>
 
@@ -216,6 +218,10 @@ onMounted(async () => {
 .hero p {
   margin: 0;
   font-size: 17px;
+}
+
+.hero__link {
+  color: var(--cyan);
 }
 
 .workspace {

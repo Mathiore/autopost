@@ -13,6 +13,9 @@
       </RouterLink>
 
       <div class="header__meta">
+        <RouterLink class="chip chip--link" to="/editor">
+          Editor local
+        </RouterLink>
         <RouterLink v-if="!isConnected" class="chip chip--link" to="/login">
           Entrar
         </RouterLink>
@@ -113,6 +116,10 @@ onMounted(() => {
 .chip--link {
   color: var(--cyan);
   text-decoration: none;
+}
+
+.chip--link.router-link-active {
+  border-color: var(--cyan);
 }
 
 @media (max-width: 720px) {

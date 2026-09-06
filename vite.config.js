@@ -6,7 +6,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 const distDir = fileURLToPath(new URL('./dist', import.meta.url))
 
-function githubPagesRoutes(routes = ['privacy', 'terms', 'login', 'integrations/tiktok']) {
+function githubPagesRoutes(routes = ['privacy', 'terms', 'login', 'editor', 'integrations/tiktok']) {
   return {
     name: 'github-pages-routes',
     apply: 'build',
